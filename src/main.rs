@@ -5,28 +5,32 @@ use warp::Filter;
 
 use std::net::Ipv4Addr;
 
-const SERRRV_VERSION: &str = env!("CARGO_PKG_VERSION");
+const OBER_VERSION: &str = env!("CARGO_PKG_VERSION");
 const STYLE_INFO: ansi_term::Colour = ansi_term::Colour::Yellow;
 const STYLE_VALUE: ansi_term::Colour = ansi_term::Colour::Blue;
 const STYLE_OK: ansi_term::Colour = ansi_term::Colour::Green;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
-    name = "serrrv",
+    name = "ober",
     about = "a quick http server for whipping up local files."
 )]
 struct Opt {
     /// The port files will be served on
-    #[structopt(short, long, env = "SERRRV_PORT")]
+    #[structopt(short, long, env = "OBER_PORT")]
     port: Option<u16>,
 
     /// The address to bind to
-    #[structopt(short, long, default_value = "0.0.0.0", env = "SERRRV_ADDRESS")]
+    #[structopt(short, long, default_value = "0.0.0.0", env = "OBER_ADDRESS")]
     address: Ipv4Addr,
 
     /// Root folder
     #[structopt(parse(from_os_str), default_value = "./")]
     path: PathBuf,
+
+    /// Surpess logs
+    #[structopt(short, long)]
+    silent: bool,
 }
 
 fn get_port(opt: &Opt) -> u16 {
@@ -42,14 +46,14 @@ fn get_port(opt: &Opt) -> u16 {
 fn print_startup_info(opt: &Opt) {
     print!(
         "{}{}\n\n",
-        STYLE_INFO.paint("Starting serrrv, serving ").to_string(),
+        STYLE_INFO.paint("Starting ober, serving ").to_string(),
         STYLE_VALUE.paint(opt.path.to_str().unwrap()).to_string(),
     );
 
     print!(
         "{}{}\n\n",
-        STYLE_INFO.paint("serrrv version: ").to_string(),
-        STYLE_VALUE.paint(SERRRV_VERSION.trim()).to_string()
+        STYLE_INFO.paint("ober version: ").to_string(),
+        STYLE_VALUE.paint(OBER_VERSION.trim()).to_string()
     );
 }
 
