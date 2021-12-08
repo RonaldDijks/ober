@@ -1,14 +1,11 @@
+use std::net::Ipv4Addr;
 use std::{net::TcpListener, path::PathBuf};
 
+use colored::*;
 use structopt::StructOpt;
 use warp::Filter;
 
-use std::net::Ipv4Addr;
-
 const OBER_VERSION: &str = env!("CARGO_PKG_VERSION");
-const STYLE_INFO: ansi_term::Colour = ansi_term::Colour::Yellow;
-const STYLE_VALUE: ansi_term::Colour = ansi_term::Colour::Blue;
-const STYLE_OK: ansi_term::Colour = ansi_term::Colour::Green;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -46,26 +43,20 @@ fn get_port(opt: &Opt) -> u16 {
 fn print_startup_info(opt: &Opt) {
     print!(
         "{}{}\n\n",
-        STYLE_INFO.paint("Starting ober, serving ").to_string(),
-        STYLE_VALUE.paint(opt.path.to_str().unwrap()).to_string(),
+        "Starting ober, serving ".yellow(),
+        opt.path.to_str().unwrap().blue(),
     );
 
     print!(
         "{}{}\n\n",
-        STYLE_INFO.paint("ober version: ").to_string(),
-        STYLE_VALUE.paint(OBER_VERSION.trim()).to_string()
+        "ober version: ".yellow(),
+        OBER_VERSION.trim().blue()
     );
 }
 
 fn print_available_info(opt: &Opt, port: u16) {
-    println!("{}", STYLE_INFO.paint("Available on:").to_string(),);
-
-    println!(
-        "  {}:{}",
-        opt.address,
-        STYLE_OK.paint(port.to_string()).to_string()
-    );
-
+    println!("{}", "Available on:".yellow());
+    println!("  {}:{}", opt.address, port.to_string().green());
     print!("Hit CTRL-C to stop the server\n\n");
 }
 
