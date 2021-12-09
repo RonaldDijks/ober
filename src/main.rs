@@ -1,4 +1,5 @@
 use std::net::Ipv4Addr;
+use std::sync::Arc;
 use std::{net::TcpListener, path::PathBuf};
 
 use colored::*;
@@ -62,12 +63,17 @@ fn print_available_info(opt: &Opt, port: u16) {
 
 #[tokio::main]
 async fn main() {
-    let opt = Opt::from_args();
+    let opt = Arc::new(Opt::from_args());
     let port = get_port(&opt);
 
     print_startup_info(&opt);
 
-    let log = warp::log::custom(|info| {
+    let log_opt = opt.clone();
+    let log = warp::log::custom(move |info| {
+        if log_opt.silent {
+            return;
+        }
+
         let now = chrono::Local::now();
 
         print!(
@@ -88,7 +94,7 @@ async fn main() {
 
     print_available_info(&opt, port);
 
-    let filter = warp::fs::dir(opt.path).with(log);
+    let filter = warp::fs::dir(opt.path.clone()).with(log);
 
     warp::serve(filter).run((opt.address.octets(), port)).await;
 }
